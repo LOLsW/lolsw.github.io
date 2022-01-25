@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="icon" href="assets/img/icon.ico">
+        <title>Marco Paratore</title>
+
+        <style>
+            @font-face {
+                font-family: "Bebas Neue";
+                src: url("assets/fonts/BebasNeue-Regular.ttf");
+            }
+
+            @keyframes ImageLoading{
+                0%{
+                    opacity: 0;
+                }
+                100%{
+                    opacity: 1;
+                }
+            }
+
+            html{
+                scroll-behavior: smooth;
+            }
+
+            body{
+                background: rgb(10, 10, 10);/* original = rgb(10, 10, 10) */
+                text-align: center;
+            }
+
+            .photo_selector_array{
+                width: 75%; /* 50% was original */
+                left: 0;
+                right: 0;
+                margin-left: auto;
+                margin-right: auto;
+                
+                text-align: center;
+            }
+
+            .photo_selector_btn{
+                width: 20%;
+
+                color: gray;
+                background-color: rgba(0, 0, 0, 0);
+
+                border: none;
+
+                text-align: center;
+                font-family: Bebas Neue;
+                font-size: 1.6vw;
+                letter-spacing: 0.2vw;
+            }
+
+            .photo_selector_btn.selected{
+                color: white;
+            }
+
+            .photo_selector_btn:after{
+                display: block;
+                content: "";
+
+                border-bottom: solid;
+                transform: scaleX(0);
+
+                transition: transform 0.3s ease-in-out;
+            }
+
+            .photo_selector_btn.selected:after{
+                border-bottom: solid;
+                transform: scaleX(1);
+            }
+
+            .photo_selector_btn:hover:after{
+                transform: scaleX(1);
+            }
+
+            .photo_gallery{
+                width: 63vw;
+                left: 0;
+                right: 0;
+                margin-left: auto;
+                margin-right: auto;
+                margin-top: 1vw;
+
+                display: grid;
+                grid-template-columns: auto auto auto;
+                gap: 1.5vw 1.5vw;
+                justify-items: center;
+            }
+
+            .photo_in_gallery{
+                animation: ImageLoading 1s linear 0s 1;
+                width: 20vw;
+                height: 20vw;
+
+                pointer-events: none;
+            }
+
+            .social_icon_array{
+                width: 10%;
+                left: 0;
+                right: 0;
+                margin-left: auto;
+                margin-right: auto;
+                margin-top: 3vw;
+                position: relative;
+                text-align: center;
+
+            }
+
+            .social_icon{
+                width: 20%;
+                padding: 3%;
+
+                opacity: 0.5;
+                transition: opacity 0.25s;
+            }
+
+            .social_links{
+                text-decoration: none;
+            }
+
+            #contact_btn{
+                position: relative;
+                width: 6.5vw;
+                height: 3vw;
+
+                color: gray;
+                background-color: rgba(0, 0, 0, 0);
+                border: solid;
+                border-radius: 0.3vw;
+
+                margin-bottom: 1.5vw;
+
+                font-family: Bebas Neue;
+                font-weight: 200;
+                font-size: 1vw;
+                letter-spacing: 0.1vw;
+
+                transition: color 0.25s;
+                transition: border 0.25s;
+
+                z-index: 1;
+            }
+
+            #contact_btn:before{
+                content: "";
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                height: 100%;
+
+                background-color: rgb(255, 255, 255);
+
+                transform-origin: center right;
+                transform: scaleX(0);
+                transition: transform 0.25s ease-in-out;
+
+                z-index: -1;
+            }
+
+            #contact_btn:hover{
+                border: solid white;
+                color: rgb(10, 10, 10);
+            }
+
+            #contact_btn:hover:before{
+                transform-origin: center left;
+                transform: scaleX(1);
+            }
+
+            .header{
+                text-align: center;
+                font-family: Bebas Neue;
+                letter-spacing: -0.35vw;
+                font-style: normal;
+                font-variant: normal;
+                font-weight: 300;
+                font-size: 8vw;
+                line-height: 20px;
+                color: rgb(255, 255, 255);
+            }
+
+            .about_me{
+                width: 50%;
+                left: 0;
+                right: 0;
+                margin-left: auto;
+                margin-right: auto;
+                margin-bottom: 0.5vw;
+                position: relative;
+
+                display: grid;
+                grid-template-columns: auto auto;
+                
+                align-items: center;
+            }
+
+            #about_me_img{
+                width: 8vw;
+                height: 8vw;
+
+                border-radius: 4vw;
+            }
+
+            .bio_text{
+                width: 100%;
+                text-align: left;
+                font-family: Bebas Neue;
+                font-size: 1.5vw;
+                color: white;
+                
+                margin: 0;
+
+                line-height: 1.5vw;
+            }
+
+            .important_text{
+                transition: color 0.75s;
+            }
+
+            .bio_text:hover .important_text{
+                color: red;
+            }
+        </style>
+
+        <script>
+            var social_logos = ["twitter_logo", "instagram_logo", "facebook_logo"];
+            var photo_cathegories = ["food_btn", "portrait_btn", "general_btn"];
+
+            function changeImageSet(elmnt){
+                let value = elmnt.id;
+                let name = elmnt.innerHTML;
+                let tmp_pc = photo_cathegories.slice();
+
+                let v_index = photo_cathegories.indexOf(value);
+                tmp_pc.splice(v_index, 1);
+
+                for(let i = 0; i < tmp_pc.length; i++){
+                    document.getElementById(tmp_pc[i]).className = "photo_selector_btn";
+                }
+
+                elmnt.className = "photo_selector_btn selected";
+
+                let photo_grid = document.getElementsByClassName("photo_gallery")[0];
+                let img_cfolder;
+
+                if(name === "FOOD"){
+                    img_cfolder = "food/";
+                }else if(name === "PORTRAIT"){
+                    img_cfolder = "portrait/";
+                }else{
+                    img_cfolder = "general/";
+                }
+
+                for(let j = 0; j < 9; j++){
+                        let temp_img_node = document.createElement("IMG");
+                        temp_img_node.id = "photo_in_gallery" + j;
+                        temp_img_node.src = "assets/img/" + img_cfolder + (j + 1) + ".png";
+                        temp_img_node.className = "photo_in_gallery";
+
+                        let img_exist = false;
+                        for(let k = 0; k < photo_grid.childNodes.length; k++){
+                            if(photo_grid.childNodes[k].id == ("photo_in_gallery" + j)){
+                                img_exist = true;
+                                break;
+                            }
+                        }
+
+                        if(img_exist){
+                            photo_grid.replaceChild(temp_img_node, photo_grid.childNodes[j]);
+                        }else{
+                            photo_grid.appendChild(temp_img_node);
+                        }
+                    }
+            }
+
+            window.onload = function(){
+                changeImageSet(document.getElementById("general_btn"));
+
+                function socialFade(evt, hovered){
+                    let sl_copy = social_logos.slice();
+                    
+                    if(hovered != -1){
+                        let hindex = sl_copy.indexOf(hovered);
+                        sl_copy.splice(hindex, 1);
+                    }
+
+                    for(let i = 0; i < sl_copy.length; i++){
+                        if(evt === "mouseover"){
+                            document.getElementById(sl_copy[i]).style.opacity = "0.5";
+                        }
+                        else{
+                            document.getElementById(sl_copy[i]).style.opacity = "1";
+                        }
+                    }
+
+                    if(evt === "mouseout"){
+                        document.getElementById(hovered).style.opacity = "0.5";
+                    } else {document.getElementById(hovered).style.opacity = "1";}
+                }
+
+                for(let i = 0; i < social_logos.length; i++){
+                    document.getElementById(social_logos[i]).addEventListener("mouseover", function(){socialFade("mouseover", social_logos[i])});
+                    document.getElementById(social_logos[i]).addEventListener("mouseout", function(){socialFade("mouseout", social_logos[i])});
+                }
+                document.getElementById("social_icon_array").addEventListener("mouseout", function(){socialFade("mouseover", -1)});
+            }
+        </script>
+    </head>
+
+    <body>
+        <h1 class="header">MARCO PARATORE</h1>
+
+        <div class="about_me">
+            <img id="about_me_img" src="assets/img/about_me.png">
+            <p class="bio_text">I am a freelance <span class="important_text">photographer</span> and <span class="important_text">filmmaker</span> currently based in <span class="important_text">Catania</span>. 
+                <br> This website features a small collection of my photography work.</p>
+        </div>
+
+        <button id="contact_btn" onclick="location.href = 'contact.html'">CONTACT</button>
+
+        <!-- Photo Sections Selector -->
+        <div class="photo_selector_array">
+            <button class="photo_selector_btn" onclick="changeImageSet(this)" id="food_btn">FOOD</button>
+            <button class="photo_selector_btn" onclick="changeImageSet(this)" id="portrait_btn">PORTRAIT</button>
+            <button class="photo_selector_btn selected" onclick="changeImageSet(this)" id="general_btn">GENERAL</button>
+        </div>
+
+        <!-- Photos -->
+        <div class="photo_gallery"></div>
+
+        <!-- Social Icons -->
+        <div class="social_icon_array" id="social_icon_array">
+            <a class="social_links" href="https://twitter.com/Marco_Paratore">
+                <img class="social_icon" id="twitter_logo" src="assets/img/socials/twitter_logo.png">
+            </a>
+
+            <a class="social_links" href="https://www.instagram.com/paratore.marco/">
+                <img class="social_icon" id="instagram_logo" src="assets/img/socials/instagram_logo.png">
+            </a>
+
+            <a class="social_links" href="https://www.facebook.com/MarcoParatoreProductions">
+                <img class="social_icon" id="facebook_logo" src="assets/img/socials/facebook_logo.png">
+            </a>
+        </div>
+
+    </body>
+
+</html>
